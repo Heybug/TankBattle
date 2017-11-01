@@ -1,7 +1,7 @@
 var x = WIDTH / 2 - TANK_SIZE / 2,
     y = HEIGHT - TANK_SIZE;
 var img = new Image();
-var fx = 0, move = false, s = 2;
+var fx = 0, move = false, s = 10;
 
 var tankSkin = [
     [3, 3],
@@ -14,13 +14,13 @@ var tankSkin = [
         game.init();
         img.src = '../images/tankAll.gif';
         img.onload = function () {
+            game.draw();
             setInterval(function () {
                 move && game.draw();
             }, 20);
         };
 
         var tk = new Tank(game.ctx);
-        // tk.ctx = game.ctx;
         console.log(tk);
     };
 
@@ -35,20 +35,21 @@ var tankSkin = [
         }
         ,
         draw: function () {
+            console.log(x, y);
             var skin = tankSkin[fx];
-            if (fx == 0) {
+            if (fx == 0 && y > 0) {
                 y -= s;
-            } else if (fx == 1) {
+            } else if (fx == 1 && y < HEIGHT - TANK_SIZE) {
                 y += s;
-            } else if (fx == 2) {
+            } else if (fx == 2 && x > 0) {
                 x -= s;
-            } else if (fx == 3) {
+            } else if (fx == 3 && x < WIDTH - TANK_SIZE) {
                 x += s;
             }
 
             game.ctx.clearRect(0, 0, WIDTH, HEIGHT);
             game.ctx.save();
-            game.ctx.drawImage(img, skin[0], skin[1], TANK_SIZE, TANK_SIZE, x, y, TANK_SIZE, TANK_SIZE);
+            game.ctx.drawImage(img, skin[0], skin[1], 26, 26, x, y, TANK_SIZE, TANK_SIZE);
             game.ctx.restore();
         }
     }
