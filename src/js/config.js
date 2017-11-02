@@ -1,6 +1,6 @@
 /**静态变量**/
 var WIDTH = 800, //屏幕宽
-    HEIGHT = 674,//屏幕高
+    HEIGHT = 672,//屏幕高
     TANK_SIZE = 32;
 
 
