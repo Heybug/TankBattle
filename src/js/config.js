@@ -4,6 +4,12 @@ var WIDTH = 800, //屏幕宽
     TANK_SIZE = 32;
 
 
+/**坦克及子弹的四个方向**/
+var UP = 0,
+    DOWN = 1,
+    LEFT = 2,
+    RIGHT = 3;
+
 /*
  /!**图片资源**!/
  var MENU_IMAGE = new Image();
@@ -56,11 +62,7 @@ var WIDTH = 800, //屏幕宽
  var HOME = 9;
  var ANOTHREHOME = 8;
 
- /!**坦克及子弹的四个方向**!/
- var UP = 0;
- var DOWN = 1;
- var LEFT = 2;
- var RIGHT = 3;
+
 
  /!**坦克及子弹的四个方向**!/
  var ENEMY_LOCATION = [192, 0, 384]; //相对与主游戏区

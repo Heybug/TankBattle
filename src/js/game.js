@@ -13,60 +13,50 @@ var tankSkin = [
     [70, 3],// 左
     [98, 3]// 右
 ];
+var thisTk = null;
 (function () {
     window.onload = function () {
         game.init();
-        img.src = '../images/tankAll.gif';
+        img.src = 'http://192.168.50.18:3000/images/tankAll.gif';
+
         img.onload = function () {
             map.init();
             game.draw();
+            for (var i = 0; i < 1; i++) {
+                var tk = new Tank(game.ctx);
+                tk.speed += i * 2;
+                game.tanks.push(tk);
+            }
+            //thisTk = game.tanks[0];
             setInterval(function () {
                 if (move) {
                     game.draw();
+                    //game.tanks[0] && game.tanks[0].draw();
+                    game.tanks.forEach(function (tk) {
+                        tk.draw();
+                    });
+                } else {
+                    game.tanks[0] && socket.emit('chat messageaaa', {move: move, fx: fx, tk: game.tanks[0]});
                 }
             }, 20);
         };
-
-        // var tk = new Tank(game.ctx);
     };
 
     var game = window.game = {
         stage: null,
         ctx: null,
+        tanks: [],
         init: function () {
             game.stage = document.getElementById('game');
             game.ctx = this.stage.getContext("2d");
             game.stage.width = WIDTH;
             game.stage.height = HEIGHT;
-        }
-        ,
+        },
         draw: function () {
-            var skin = tankSkin[fx];
-            if (fx == 0 && y > 0) {
-                y -= s;
-            } else if (fx == 1 && y < HEIGHT - TANK_SIZE) {
-                y += s;
-            } else if (fx == 2 && x > 0) {
-                x -= s;
-            } else if (fx == 3 && x < WIDTH - TANK_SIZE) {
-                x += s;
-            }
-
-            var posIndex = Math.floor(y / TANK_SIZE);
-            if (map.useMap.length >= posIndex) {
-                var val = map.useMap[0];
-                // map.useMap.forEach(function (val, index) {
-                /* if (y - 16 >= val[0] && y - 16 <= val[3]) {
-                 move = false;
-                 console.log(val, '发生碰撞');
-                 return false;
-                 }*/
-                // })
-            }
             game.ctx.clearRect(0, 0, WIDTH, HEIGHT);
-            game.ctx.drawImage(img, skin[0], skin[1], 26, 26, x, y, TANK_SIZE, TANK_SIZE);
+            // game.ctx.drawImage(img, skin[0], skin[1], 26, 26, x, y, TANK_SIZE, TANK_SIZE);
             map.draw();
-            // line();
+            //line();
         }
     }
 })();
@@ -135,6 +125,7 @@ var map = {
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
     ],
+    // 障碍素材1:泥砖 2:钢砖
     obstacle: {
         1: [0, 96], 2: [16, 96]
     },
@@ -149,7 +140,6 @@ var map = {
                 }
             })
         });
-        console.log(this.useMap);
     },
     draw: function () {
         for (var p in this.useMap) {
@@ -161,22 +151,47 @@ var map = {
 };
 
 
+/**坦克**/
 var Tank = function (ctx) {
+    this.x = 10;
+    this.y = 10;
     this.ctx = ctx;
     this.lives = 3;//生命值
     this.isProtected = true;//是否受保护
     this.protectedTime = 500;//保护时间
     this.offsetX = 0;//坦克2与坦克1的距离
-    this.speed = 2;//坦克的速度
-    this.draw = function () {
-
-    };
+    this.speed = 6;//坦克的速度
+    this.skin = 0;
     this.move = function () {
+        this.skin = tankSkin[fx];
+        if (fx == UP && this.y > 0) {
+            this.y -= this.speed;
+        } else if (fx == DOWN && this.y < HEIGHT - TANK_SIZE) {
+            this.y += this.speed;
+        } else if (fx == LEFT && this.x > 0) {
+            this.x -= this.speed;
+        } else if (fx == RIGHT && this.x < WIDTH - TANK_SIZE) {
+            this.x += this.speed;
+        }
+    };
+    this.draw = function () {
+        this.ctx.drawImage(img, this.skin[0], this.skin[1], 26, 26, this.x, this.y, TANK_SIZE, TANK_SIZE);
+        this.move();
+    };
 
-    }
 };
 
+var socket = io();
+
 jQuery(function ($) {
+    // socket
+    socket.on('chat messageaaa', function (msg) {
+        move = msg.move;
+        fx = msg.fx;
+        game.tanks[0].x = msg.tk.x;
+        game.tanks[0].y = msg.tk.y;
+    });
+
     $(document).keydown(function (e) {
         if (e.keyCode == 87) {
             move = true;
@@ -191,6 +206,7 @@ jQuery(function ($) {
             move = true;
             fx = 3;
         }
+        socket.emit('chat messageaaa', {move: move, fx: fx, tk: game.tanks[0]});
     });
     $(document).keyup(function (e) {
         move = false;
