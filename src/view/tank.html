@@ -17,7 +17,11 @@
 
     // 接收数据
     socket.on('data', function (msg) {
-        game.keys = msg;
+       /* if (!GetQueryString('send')) {
+            game.tank1.dir = msg.dir;
+            game.tank1.x = msg.x;
+            game.tank1.y = msg.y;
+        }*/
     });
 </script>
 </body>

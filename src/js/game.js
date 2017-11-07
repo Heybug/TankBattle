@@ -67,7 +67,8 @@ function keyEvent () {
 
 function sendInfo () {
     if (GetQueryString('send')) {
-        socket.emit('data', game.keys);
+        var t = game.tank1;
+        // socket.emit('data', {x: t.x, y: t.y, dir: t.dir});
     }
 }
 

@@ -19,10 +19,15 @@ var Tank = function () {
     this.isDestroyed = false;
     this.tempX = 0;
     this.tempY = 0;
+    this.skin = [
+        [3, 3],
+        [34, 3],
+        [67, 3],
+        [98, 3]
+    ];
 
     this.move = function () {
         this.tempX = this.x;
-        ``
         this.tempY = this.y;
 
         if (this.dir == UP) {
@@ -49,31 +54,7 @@ var PlayTank = function (context) {
     this.speed = 2;//坦克的速度
 
     this.draw = function () {
-        this.hit = false;
-        this.ctx.drawImage(game.imgAll, 3, 3, this.size, this.size, this.x, this.y, this.size, this.size);
+        this.ctx.drawImage(game.imgAll, this.skin[this.dir][0], this.skin[this.dir][1], this.size, this.size, this.x, this.y, this.size, this.size);
     };
-
-    this.distroy = function () {
-        this.isDestroyed = true;
-        crackArray.push(new CrackAnimation(CRACK_TYPE_TANK, this.ctx, this));
-        PLAYER_DESTROY_AUDIO.play();
-    };
-
-    this.renascenc = function (player) {
-        this.lives--;
-        this.dir = UP;
-        this.isProtected = true;
-        this.protectedTime = 500;
-        this.isDestroyed = false;
-        var temp = 0;
-        if (player == 1) {
-            temp = 129;
-        } else {
-            temp = 256;
-        }
-        this.x = temp + map.offsetX;
-        this.y = 385 + map.offsetY;
-    };
-
 };
 PlayTank.prototype = new Tank();
