@@ -22,92 +22,100 @@
 <body>
 
 <script src="http://127.0.0.1:3000/lib/hilo-standalone.min.js"></script>
-<script src="http://127.0.0.1:3000/lib/jquery.min.js"></script>
 <script src="http://127.0.0.1:3000/js/config.js"></script>
+<script src="http://127.0.0.1:3000/js/game1.js"></script>
+<script src="http://127.0.0.1:3000/js/Asset.js"></script>
+<script src="http://127.0.0.1:3000/js/ReadyScene.js"></script>
+<script src="http://127.0.0.1:3000/js/OverScene.js"></script>
+<script src="http://127.0.0.1:3000/js/Map.js"></script>
+<script src="http://127.0.0.1:3000/js/Tank.js"></script>
+<script src="http://127.0.0.1:3000/js/Holdbacks.js"></script>
 <script>
-    var speed = 4,
-        isHit = false;
-    // 坦克方向
-    var
-        tankSkin = [
-            [2, 2, TANK_SIZE, TANK_SIZE],// 上
-            [35, 2, TANK_SIZE, TANK_SIZE],// 下
-            [70, 2, TANK_SIZE, TANK_SIZE],// 左
-            [98, 2, TANK_SIZE, TANK_SIZE]// 右
-        ];
+    /*var speed = 4,
+     isHit = false;
+     // 坦克方向
+     var
+     tankSkin = [
+     [2, 2, TANK_SIZE, TANK_SIZE],// 上
+     [35, 2, TANK_SIZE, TANK_SIZE],// 下
+     [70, 2, TANK_SIZE, TANK_SIZE],// 左
+     [98, 2, TANK_SIZE, TANK_SIZE]// 右
+     ];
 
-    var stage = new Hilo.Stage({
-        renderType: 'canvas',
-        width: WIDTH,
-        height: HEIGHT
-    });
-    document.body.appendChild(stage.canvas);
+     var stage = new Hilo.Stage({
+     renderType: 'canvas',
+     width: WIDTH,
+     height: HEIGHT
+     });
+     document.body.appendChild(stage.canvas);
 
-    var bmp = null, bmp2 = null;
-    var img = new Image();
-    img.src = '../images/tankAll.gif';
+     var bmp = null, bmp2 = null;
+     var img = new Image();
+     img.src = '../images/tankAll.gif';
 
-    //设定舞台刷新频率为60fps
-    var ticker = new Hilo.Ticker(60);
-    //把舞台加入到tick队列
-    ticker.addTick(stage);
-    //启动ticker
-    ticker.interval(function () {
-        if (move) {
-            bmp.setImage(img, tankSkin[fx]);
-            if (fx == UP && bmp.y > 0) {
-                bmp.y -= speed;
-            } else if (fx == DOWN && bmp.y < HEIGHT - TANK_SIZE) {
-                bmp.y += speed;
-            } else if (fx == LEFT && bmp.x > 0) {
-                bmp.x -= speed;
-            } else if (fx == RIGHT && bmp.x < WIDTH - TANK_SIZE) {
-                bmp.x += speed;
-            }
-            isHit = bmp.hitTestObject(bmp2);
-            if (isHit) {
-                move = false;
-            }
-        }
-    }, 20);
-    ticker.start();
+     //设定舞台刷新频率为60fps
+     var ticker = new Hilo.Ticker(60);
+     //把舞台加入到tick队列
+     ticker.addTick(stage);
+     //启动ticker
+     ticker.interval(function () {
+     if (move) {
+     bmp.setImage(img, tankSkin[fx]);
+     if (fx == UP && bmp.y > 0) {
+     bmp.y -= speed;
+     } else if (fx == DOWN && bmp.y < HEIGHT - TANK_SIZE) {
+     bmp.y += speed;
+     } else if (fx == LEFT && bmp.x > 0) {
+     bmp.x -= speed;
+     } else if (fx == RIGHT && bmp.x < WIDTH - TANK_SIZE) {
+     bmp.x += speed;
+     }
+     isHit = bmp.hitTestObject(bmp2);
+     if (isHit) {
+     move = false;
+     }
+     }
+     }, 20);
+     ticker.start();
 
 
-    img.onload = function () {
-        bmp = new Hilo.Bitmap({image: img, rect: tankSkin[0]});
-        stage.addChild(bmp);
-        bmp.x = 100;
-        bmp.y = 100;
+     img.onload = function () {
+     bmp = new Hilo.Bitmap({image: img, rect: tankSkin[0]});
+     stage.addChild(bmp);
+     bmp.x = 100;
+     bmp.y = 100;
 
-        bmp2 = new Hilo.Bitmap({image: img, rect: tankSkin[0]});
-        stage.addChild(bmp2);
-    };
+     bmp2 = new Hilo.Bitmap({image: img, rect: tankSkin[0]});
+     stage.addChild(bmp2);
+     };
 
-    var move = false,
-        fx = 0;
-    jQuery(function ($) {
-        $(document).keydown(function (e) {
-            if (!isHit) {
-                if (e.keyCode == 87) {
-                    move = true;
-                    fx = 0;
-                } else if (e.keyCode == 83) {
-                    move = true;
-                    fx = 1;
-                } else if (e.keyCode == 65) {
-                    move = true;
-                    fx = 2;
-                } else if (e.keyCode == 68) {
-                    move = true;
-                    fx = 3;
-                }
-            }
-        });
-        $(document).keyup(function (e) {
-            move = false;
-            isHit = false;
-        });
-    });
+     var move = false,
+     fx = 0;
+
+
+     jQuery(function ($) {
+     $(document).keydown(function (e) {
+     if (!isHit) {
+     if (e.keyCode == 87) {
+     move = true;
+     fx = 0;
+     } else if (e.keyCode == 83) {
+     move = true;
+     fx = 1;
+     } else if (e.keyCode == 65) {
+     move = true;
+     fx = 2;
+     } else if (e.keyCode == 68) {
+     move = true;
+     fx = 3;
+     }
+     }
+     });
+     $(document).keyup(function (e) {
+     move = false;
+     isHit = false;
+     });
+     });*/
 </script>
 </body>
 </html>

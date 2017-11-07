@@ -1,185 +1,106 @@
-var x = WIDTH / 2 - TANK_SIZE / 2,
-    y = HEIGHT - TANK_SIZE;
-x = 128, y = 128;
-var img = new Image();
-var fx = 0,// 坦克移动方向 0:上,1:下,2:左 3:右
-    move = false, // 坦克是否移动
-    s = 2; // 坦克移动速度
-
-// 坦克方向
-var tankSkin = [
-    [3, 3],// 上
-    [35, 3],// 下
-    [70, 3],// 左
-    [98, 3]// 右
-];
-var thisTk = null;
 (function () {
     window.onload = function () {
         game.init();
-        img.src = 'http://127.0.0.1:3000/images/tankAll.gif';
-
-        img.onload = function () {
-            map.init();
-            game.draw();
-            for (var i = 0; i < 1; i++) {
-                var tk = new Tank(game.ctx);
-                tk.speed += i * 2;
-                game.tanks.push(tk);
-            }
-            //thisTk = game.tanks[0];
-            setInterval(function () {
-                if (move) {
-                    game.draw();
-                    //game.tanks[0] && game.tanks[0].draw();
-                    game.tanks.forEach(function (tk) {
-                        tk.draw();
-                    });
-                } else {
-                    game.tanks[0] && socket.emit('chat messageaaa', {move: move, fx: fx, tk: game.tanks[0]});
-                }
-            }, 30);
-        };
     };
 
     var game = window.game = {
-        stage: null,
-        ctx: null,
-        tanks: [],
+        width: 416,
+        height: 416,
+        stage: null, // 舞台
+        ctx: '', //2d
+        frameRate: 20,// 帧率
+
+        map: null,// 地图
+        tank1: null,
+        imgAll: new Image(),
+
+        keys: [],// 记录按键
         init: function () {
-            game.stage = document.getElementById('game');
-            game.ctx = this.stage.getContext("2d");
-            game.stage.width = WIDTH;
-            game.stage.height = HEIGHT;
+            this.stage = document.getElementById('stage');
+            this.ctx = this.stage.getContext("2d");
+            this.stage.width = this.width;
+            this.stage.height = this.height;
+            this.stage.style.cssText = "background-color:#000";
+            this.imgAll.src = 'http://192.168.50.18:3000/images/tankAll.gif';
+            this.map = new Map(this.ctx);
+            this.tank1 = new PlayTank(this.ctx);
+
+            game.map.init();
+
+            this.imgAll.onload = function () {
+                game.map.draw();
+                game.startGame();
+            };
         },
-        draw: function () {
-            game.ctx.clearRect(0, 0, WIDTH, HEIGHT);
-            // game.ctx.drawImage(img, skin[0], skin[1], 26, 26, x, y, TANK_SIZE, TANK_SIZE);
-            map.draw();
-            //line();
+        startGame: function () {
+            setInterval(this.gameLoop, this.frameRate);
+        },
+        gameLoop: function () {
+            game.ctx.clearRect(0, 0, game.width, game.height);
+            game.tank1.draw();
+            game.map.draw();
+            keyEvent();
         }
-    }
+    };
 })();
 
-function line () {
-    game.ctx.strokeStyle = '#fff';
-    for (var i = 0; i < 800; i += 32) {
-        game.ctx.beginPath();
-        game.ctx.lineWidth = 1;
-        game.ctx.moveTo(i, HEIGHT);
-        game.ctx.lineTo(i, 0);
-        game.ctx.stroke()
-    }
-    for (var i = 0; i < 800; i += 32) {
-        game.ctx.beginPath();
-        game.ctx.lineWidth = 1;
-        game.ctx.moveTo(WIDTH, i);
-        game.ctx.lineTo(0, i);
-        game.ctx.stroke()
+// 解决卡顿
+function keyEvent () {
+    if (game.keys.includes(87)) {
+        game.tank1.dir = UP;
+        game.tank1.move();
+        sendInfo();
+    } else if (game.keys.includes(83)) {
+        game.tank1.dir = DOWN;
+        game.tank1.move();
+        sendInfo();
+    } else if (game.keys.includes(65)) {
+        game.tank1.dir = LEFT;
+        game.tank1.move();
+        sendInfo();
+    } else if (game.keys.includes(68)) {
+        game.tank1.dir = RIGHT;
+        game.tank1.move();
+        sendInfo();
     }
 }
 
-var map = {
-    useMap: {},
-    pos: [
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-    ],
-    // 障碍素材1:泥砖 2:钢砖
-    obstacle: {
-        1: [0, 96], 2: [16, 96]
-    },
-    init: function () {
-        this.pos.forEach(function (val1, index1) {
-            val1.forEach(function (val2, index2) {
-                if (val2 > 0) {
-                    if (map.useMap[val2])
-                        map.useMap[val2].push([index1 * 16, index2 * 16]);
-                    else
-                        map.useMap[val2] = [[index1 * 16, index2 * 16]];
-                }
-            })
-        });
-    },
-    draw: function () {
-        for (var p in this.useMap) {
-            this.useMap[p].forEach(function (val, index1) {
-                game.ctx.drawImage(img, map.obstacle[p][0], map.obstacle[p][1], 16, 16, val[1], val[0], 16, 16);
-            })
+function sendInfo () {
+    if (GetQueryString('send')) {
+        socket.emit('data', game.keys);
+    }
+}
+
+$(document).keydown(function (e) {
+    var keyCode = e.keyCode;
+    if (!game.keys.includes(keyCode)) {
+        if (keyCode == 87) {
+            game.keys.push(keyCode);
+            game.tank1.dir = UP;
+        } else if (keyCode == 83) {
+            game.keys.push(keyCode);
+            game.tank1.dir = DOWN;
+        } else if (keyCode == 65) {
+            game.keys.push(keyCode);
+            game.tank1.dir = LEFT;
+        } else if (keyCode == 68) {
+            game.keys.push(keyCode);
+            game.tank1.dir = RIGHT;
         }
     }
-};
-
-
-
-var socket = io();
-
-jQuery(function ($) {
-    // socket
-    socket.on('chat messageaaa', function (msg) {
-        move = msg.move;
-        fx = msg.fx;
-        game.tanks[0].x = msg.tk.x;
-        game.tanks[0].y = msg.tk.y;
-    });
-
-    $(document).keydown(function (e) {
-        if (e.keyCode == 87) {
-            move = true;
-            fx = 0;
-        } else if (e.keyCode == 83) {
-            move = true;
-            fx = 1;
-        } else if (e.keyCode == 65) {
-            move = true;
-            fx = 2;
-        } else if (e.keyCode == 68) {
-            move = true;
-            fx = 3;
-        }
-        socket.emit('chat messageaaa', {move: move, fx: fx, tk: game.tanks[0]});
-    });
-    $(document).keyup(function (e) {
-        move = false;
-    });
 });
+$(document).keyup(function (e) {
+    var index = game.keys.indexOf(e.keyCode);
+    if (index > -1) {
+        game.keys.splice(index, 1);
+    }
+    socket.emit('data', []);
+});
+
+
+function GetQueryString (name) {
+    var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+    var r = window.location.search.substr(1).match(reg);
+    if (r != null) return unescape(r[2]);
+    return null;
+}

@@ -1,29 +1,79 @@
-/**坦克**/
-var Tank = function (ctx) {
-    this.x = 10;
-    this.y = 10;
-    this.ctx = ctx;
+/**************坦克及子弹的四个方向*****************/
+var UP = 0,
+    DOWN = 1,
+    LEFT = 2,
+    RIGHT = 3;
+
+var Tank = function () {
+    this.x = 100;
+    this.y = 100;
+    this.size = 32;//坦克的大小
+    this.dir = UP;//方向0：上 1：下 2：左3：右
+    this.speed = 1;//坦克的速度
+    this.frame = 0;//控制敌方坦克切换方向的时间
+    this.hit = false; //是否碰到墙或者坦克
+    this.isAI = false; //是否自动
+    this.isShooting = false;//子弹是否在运行中
+    this.bullet = null;//子弹
+    this.shootRate = 0.6;//射击的概率
+    this.isDestroyed = false;
+    this.tempX = 0;
+    this.tempY = 0;
+
+    this.move = function () {
+        this.tempX = this.x;
+        ``
+        this.tempY = this.y;
+
+        if (this.dir == UP) {
+            this.tempY -= this.speed;
+        } else if (this.dir == DOWN) {
+            this.tempY += this.speed;
+        } else if (this.dir == RIGHT) {
+            this.tempX += this.speed;
+        } else if (this.dir == LEFT) {
+            this.tempX -= this.speed;
+        }
+        this.x = this.tempX;
+        this.y = this.tempY;
+    };
+};
+
+// 玩家
+var PlayTank = function (context) {
+    this.ctx = context;
     this.lives = 3;//生命值
     this.isProtected = true;//是否受保护
     this.protectedTime = 500;//保护时间
     this.offsetX = 0;//坦克2与坦克1的距离
-    this.speed = 6;//坦克的速度
-    this.skin = 0; // 皮肤
-    this.move = function () {
-        this.skin = tankSkin[fx];
-        if (fx == UP && this.y > 0) {
-            this.y -= this.speed;
-        } else if (fx == DOWN && this.y < HEIGHT - TANK_SIZE) {
-            this.y += this.speed;
-        } else if (fx == LEFT && this.x > 0) {
-            this.x -= this.speed;
-        } else if (fx == RIGHT && this.x < WIDTH - TANK_SIZE) {
-            this.x += this.speed;
-        }
-    };
+    this.speed = 2;//坦克的速度
+
     this.draw = function () {
-        this.ctx.drawImage(img, this.skin[0], this.skin[1], 26, 26, this.x, this.y, TANK_SIZE, TANK_SIZE);
-        this.move();
+        this.hit = false;
+        this.ctx.drawImage(game.imgAll, 3, 3, this.size, this.size, this.x, this.y, this.size, this.size);
+    };
+
+    this.distroy = function () {
+        this.isDestroyed = true;
+        crackArray.push(new CrackAnimation(CRACK_TYPE_TANK, this.ctx, this));
+        PLAYER_DESTROY_AUDIO.play();
+    };
+
+    this.renascenc = function (player) {
+        this.lives--;
+        this.dir = UP;
+        this.isProtected = true;
+        this.protectedTime = 500;
+        this.isDestroyed = false;
+        var temp = 0;
+        if (player == 1) {
+            temp = 129;
+        } else {
+            temp = 256;
+        }
+        this.x = temp + map.offsetX;
+        this.y = 385 + map.offsetY;
     };
 
 };
+PlayTank.prototype = new Tank();
