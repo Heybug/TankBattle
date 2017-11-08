@@ -5,11 +5,11 @@ var UP = 0,
     RIGHT = 3;
 
 var Tank = function () {
-    this.x = 100;
-    this.y = 100;
+    this.x = 48;
+    this.y = 0;
     this.size = 32;//坦克的大小
     this.dir = UP;//方向0：上 1：下 2：左3：右
-    this.speed = 1;//坦克的速度
+    this.speed = 2;//坦克的速度
     this.frame = 0;//控制敌方坦克切换方向的时间
     this.hit = false; //是否碰到墙或者坦克
     this.isAI = false; //是否自动
@@ -51,7 +51,7 @@ var PlayTank = function (context) {
     this.isProtected = true;//是否受保护
     this.protectedTime = 500;//保护时间
     this.offsetX = 0;//坦克2与坦克1的距离
-    this.speed = 2;//坦克的速度
+    this.speed = 4;//坦克的速度
 
     this.draw = function () {
         this.ctx.drawImage(game.imgAll, this.skin[this.dir][0], this.skin[this.dir][1], this.size, this.size, this.x, this.y, this.size, this.size);

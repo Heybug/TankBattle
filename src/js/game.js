@@ -68,8 +68,10 @@ function keyEvent () {
 function sendInfo () {
     if (GetQueryString('send')) {
         var t = game.tank1;
-        // socket.emit('data', {x: t.x, y: t.y, dir: t.dir});
+        var json = {k: game.keys, x: game.tank1.x, y: game.tank1.y};
+        socket.emit('data', JSON.stringify(json));
     }
+    console.log(game.tank1.x, game.tank1.y)
 }
 
 $(document).keydown(function (e) {
@@ -95,7 +97,8 @@ $(document).keyup(function (e) {
     if (index > -1) {
         game.keys.splice(index, 1);
     }
-    socket.emit('data', []);
+    var json = {k: [], x: game.tank1.x, y: game.tank1.y};
+    socket.emit('data', JSON.stringify(json));
 });
 
 

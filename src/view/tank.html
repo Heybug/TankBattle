@@ -16,12 +16,20 @@
     var socket = io();
 
     // 接收数据
-    socket.on('data', function (msg) {
-       /* if (!GetQueryString('send')) {
-            game.tank1.dir = msg.dir;
-            game.tank1.x = msg.x;
-            game.tank1.y = msg.y;
-        }*/
+    socket.on('data', function (obj) {
+        if (!GetQueryString('send')) {
+            var json = JSON.parse(obj);
+            console.log(game.tank1.x, game.tank1.y);
+            game.keys = json.k;
+            game.tank1.x = json.x;
+            game.tank1.y = json.y;
+            /*game.tank1.dir = msg.dir;
+             game.tank1.x = msg.x;
+             game.tank1.y = msg.y;*/
+            /*game.tank1.x = msg.xx;
+             game.tank1.y = msg.yy;*/
+        }
+
     });
 </script>
 </body>
