@@ -6,7 +6,7 @@ var UP = 0,
 
 var Tank = function () {
     this.x = 48;
-    this.y = 0;
+    this.y = 100;
     this.size = 32;//坦克的大小
     this.dir = UP;//方向0：上 1：下 2：左3：右
     this.speed = 2;//坦克的速度
@@ -23,25 +23,51 @@ var Tank = function () {
         [3, 3],
         [34, 3],
         [67, 3],
-        [98, 3]
+        [99, 3]
     ];
 
     this.move = function () {
-        this.tempX = this.x;
-        this.tempY = this.y;
+        if (!this.isCollision()) {
+            this.tempX = this.x;
+            this.tempY = this.y;
 
-        if (this.dir == UP) {
-            this.tempY -= this.speed;
-        } else if (this.dir == DOWN) {
-            this.tempY += this.speed;
-        } else if (this.dir == RIGHT) {
-            this.tempX += this.speed;
-        } else if (this.dir == LEFT) {
-            this.tempX -= this.speed;
+            if (this.dir == UP) {
+                this.tempY -= this.speed;
+            } else if (this.dir == DOWN) {
+                this.tempY += this.speed;
+            } else if (this.dir == RIGHT) {
+                this.tempX += this.speed;
+            } else if (this.dir == LEFT) {
+                this.tempX -= this.speed;
+            }
+            this.x = this.tempX;
+            this.y = this.tempY;
         }
-        this.x = this.tempX;
-        this.y = this.tempY;
     };
+    // 碰撞
+    this.isCollision = function () {
+        console.log(this.x);
+        var result = false;
+        if (this.dir == UP) {
+            if (this.y + this.speed <= this.speed) {
+                result = true;
+            }
+        } else if (this.dir == DOWN) {
+            if (this.y >= game.height - this.size + this.speed) {
+                result = true;
+            }
+
+        } else if (this.dir == RIGHT) {
+            if (this.x >= game.width - this.size + this.speed) {
+                result = true;
+            }
+        } else if (this.dir == LEFT) {
+            if (this.x <= 0) {
+                result = true;
+            }
+        }
+        return result;
+    }
 };
 
 // 玩家

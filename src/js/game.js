@@ -71,7 +71,7 @@ function sendInfo () {
         var json = {k: game.keys, x: game.tank1.x, y: game.tank1.y};
         socket.emit('data', JSON.stringify(json));
     }
-    console.log(game.tank1.x, game.tank1.y)
+    // console.log(game.tank1.x, game.tank1.y)
 }
 
 $(document).keydown(function (e) {
