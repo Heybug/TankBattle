@@ -27,7 +27,9 @@ var Tank = function () {
     ];
 
     this.move = function () {
-        if (!this.isCollision()) {
+        this.isCollision();
+
+        if (!this.hit) {
             this.tempX = this.x;
             this.tempY = this.y;
 
@@ -46,27 +48,25 @@ var Tank = function () {
     };
     // 碰撞
     this.isCollision = function () {
-        console.log(this.x);
-        var result = false;
+        console.log(this.x, this.y);
         if (this.dir == UP) {
             if (this.y + this.speed <= this.speed) {
-                result = true;
+                this.hit = true;
             }
         } else if (this.dir == DOWN) {
             if (this.y >= game.height - this.size + this.speed) {
-                result = true;
+                this.hit = true;
             }
 
         } else if (this.dir == RIGHT) {
             if (this.x >= game.width - this.size + this.speed) {
-                result = true;
+                this.hit = true;
             }
         } else if (this.dir == LEFT) {
             if (this.x <= 0) {
-                result = true;
+                this.hit = true;
             }
         }
-        return result;
     }
 };
 
@@ -80,6 +80,7 @@ var PlayTank = function (context) {
     this.speed = 4;//坦克的速度
 
     this.draw = function () {
+        this.hit = false;
         this.ctx.drawImage(game.imgAll, this.skin[this.dir][0], this.skin[this.dir][1], this.size, this.size, this.x, this.y, this.size, this.size);
     };
 };
