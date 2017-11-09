@@ -5,8 +5,8 @@ var UP = 0,
     RIGHT = 3;
 
 var Tank = function () {
-    this.x = 48;
-    this.y = 100;
+    this.x = 0;
+    this.y = 0;
     this.size = 32;//坦克的大小
     this.dir = UP;//方向0：上 1：下 2：左3：右
     this.speed = 2;//坦克的速度
@@ -27,7 +27,7 @@ var Tank = function () {
     ];
 
     this.move = function () {
-        this.isCollision();
+        this.isHit();
 
         if (!this.hit) {
             this.tempX = this.x;
@@ -47,29 +47,52 @@ var Tank = function () {
         }
     };
     // 碰撞
-    this.isCollision = function () {
-        console.log(this.x, this.y);
-        if (this.dir == UP) {
-            if (this.y + this.speed <= this.speed) {
-                this.hit = true;
-            }
-        } else if (this.dir == DOWN) {
-            if (this.y >= game.height - this.size + this.speed) {
-                this.hit = true;
+    this.isHit = function () {
+        if (this.dir == UP && this.y + this.speed <= this.speed) {
+            this.hit = true;
+        } else if (this.dir == DOWN && this.y >= game.height - this.size + this.speed) {
+            this.hit = true;
+        } else if (this.dir == RIGHT && this.x >= game.width - this.size + this.speed) {
+            this.hit = true;
+        } else if (this.dir == LEFT && this.x <= 0) {
+            this.hit = true;
+        }
+
+        if (!this.hit) {
+            // 坦克附近的障碍坐标
+            if (this.dir == UP) {
+                var mapIndexX = parseInt((this.x - this.speed) / 16),
+                    mapIndexY = parseInt((this.y - this.speed) / 16);
+                var za = game.map.arrMap[game.map.lelve][mapIndexY][mapIndexX];
+                if (za > 0) {
+                    this.hit = true;
+                }
+            } else if (this.dir == DOWN) {
+                var mapIndexX = parseInt((this.x + this.size - this.speed) / 16),
+                    mapIndexY = parseInt((this.y + this.size - this.speed) / 16);
+                var za = game.map.arrMap[game.map.lelve][mapIndexY][mapIndexX];
+                if (za > 0) {
+                    this.hit = true;
+                }
+            } else if (this.dir == LEFT) {
+                var mapIndexX = parseInt((this.x - this.speed) / 16),
+                    mapIndexY = parseInt((this.y - this.speed) / 16);
+                var za = game.map.arrMap[game.map.lelve][mapIndexY][mapIndexX];
+                if (za > 0) {
+                    this.hit = true;
+                }
+            } else if (this.dir == RIGHT) {
+                var mapIndexX = parseInt((this.x + this.size - this.speed) / 16),
+                    mapIndexY = parseInt((this.y - this.speed) / 16);
+                var za = game.map.arrMap[game.map.lelve][mapIndexY][mapIndexX];
+                if (za > 0) {
+                    this.hit = true;
+                }
             }
 
-        } else if (this.dir == RIGHT) {
-            if (this.x >= game.width - this.size + this.speed) {
-                this.hit = true;
-            }
-        } else if (this.dir == LEFT) {
-            if (this.x <= 0) {
-                this.hit = true;
-            }
         }
     }
 };
-
 // 玩家
 var PlayTank = function (context) {
     this.ctx = context;
@@ -78,6 +101,8 @@ var PlayTank = function (context) {
     this.protectedTime = 500;//保护时间
     this.offsetX = 0;//坦克2与坦克1的距离
     this.speed = 4;//坦克的速度
+    this.x = 100;
+    this.y = 200;
 
     this.draw = function () {
         this.hit = false;
