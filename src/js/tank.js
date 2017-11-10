@@ -7,7 +7,7 @@ var UP = 0,
 var Tank = function () {
     this.x = 0;
     this.y = 0;
-    this.size = 32;//坦克的大小
+    this.size = 30;//坦克的大小
     this.dir = UP;//方向0：上 1：下 2：左3：右
     this.speed = 2;//坦克的速度
     this.frame = 0;//控制敌方坦克切换方向的时间
@@ -20,12 +20,26 @@ var Tank = function () {
     this.tempX = 0;
     this.tempY = 0;
     this.skin = [
-        [3, 3],
-        [34, 3],
-        [67, 3],
-        [99, 3]
+        [0, 0],
+        [32, 0],
+        [64, 0],
+        [96, 0]
     ];
+    // 射击
+    this.shoot = function () {
+        if (this.dir === UP) {
+            this.ctx.fillStyle = "#fff";
+            this.ctx.beginPath();
+            this.ctx.arc(this.x + this.size / 2 + 1, this.y - 2, 2, 0, 2 * Math.PI);
+            this.ctx.fill();
+        } else if (this.dir === DOWN) {
 
+        } else if (this.dir === RIGHT) {
+
+        } else if (this.dir === LEFT) {
+
+        }
+    };
     this.move = function () {
         this.isHit();
 
@@ -33,13 +47,13 @@ var Tank = function () {
             this.tempX = this.x;
             this.tempY = this.y;
 
-            if (this.dir == UP) {
+            if (this.dir === UP) {
                 this.tempY -= this.speed;
-            } else if (this.dir == DOWN) {
+            } else if (this.dir === DOWN) {
                 this.tempY += this.speed;
-            } else if (this.dir == RIGHT) {
+            } else if (this.dir === RIGHT) {
                 this.tempX += this.speed;
-            } else if (this.dir == LEFT) {
+            } else if (this.dir === LEFT) {
                 this.tempX -= this.speed;
             }
             this.x = this.tempX;
@@ -60,36 +74,36 @@ var Tank = function () {
 
         if (!this.hit) {
             // 坦克附近的障碍坐标
-            if (this.dir == UP) {
-                var mapIndexX = parseInt((this.x - this.speed) / 16),
-                    mapIndexY = parseInt((this.y - this.speed) / 16);
-                var za = game.map.arrMap[game.map.lelve][mapIndexY][mapIndexX];
-                if (za > 0) {
-                    this.hit = true;
-                }
-            } else if (this.dir == DOWN) {
-                var mapIndexX = parseInt((this.x + this.size - this.speed) / 16),
-                    mapIndexY = parseInt((this.y + this.size - this.speed) / 16);
-                var za = game.map.arrMap[game.map.lelve][mapIndexY][mapIndexX];
-                if (za > 0) {
-                    this.hit = true;
-                }
-            } else if (this.dir == LEFT) {
-                var mapIndexX = parseInt((this.x - this.speed) / 16),
-                    mapIndexY = parseInt((this.y - this.speed) / 16);
-                var za = game.map.arrMap[game.map.lelve][mapIndexY][mapIndexX];
-                if (za > 0) {
-                    this.hit = true;
-                }
-            } else if (this.dir == RIGHT) {
-                var mapIndexX = parseInt((this.x + this.size - this.speed) / 16),
-                    mapIndexY = parseInt((this.y - this.speed) / 16);
-                var za = game.map.arrMap[game.map.lelve][mapIndexY][mapIndexX];
-                if (za > 0) {
-                    this.hit = true;
-                }
-            }
+            let mapIndexX = 0, mapIndexY = 0, za1 = 0, za2 = 0, za3 = 0;
 
+            if (this.dir === UP) {
+                mapIndexX = funInt(this.x / 16);
+                mapIndexY = funInt((this.y - this.speed) / 16);
+                za1 = getMap(mapIndexY, mapIndexX);
+                za2 = getMap(mapIndexY, funInt((this.x + this.size / 2) / 16));
+                za3 = getMap(mapIndexY, funInt((this.x + this.size) / 16));
+            } else if (this.dir === DOWN) {
+                mapIndexX = funInt((this.x) / 16);
+                mapIndexY = funInt((this.y + this.size + 2) / 16);
+                za1 = getMap(mapIndexY, mapIndexX);
+                za2 = getMap(mapIndexY, funInt((this.x + this.size / 2) / 16));
+                za3 = getMap(mapIndexY, funInt((this.x + this.size) / 16));
+            } else if (this.dir === LEFT) {
+                mapIndexX = funInt((this.x - 3) / 16);
+                mapIndexY = funInt((this.y) / 16);
+                za1 = getMap(mapIndexY, mapIndexX);
+                za2 = getMap(funInt((this.y + this.size / 2) / 16), mapIndexX);
+                za3 = getMap(funInt((this.y + this.size) / 16), mapIndexX);
+            } else if (this.dir === RIGHT) {
+                mapIndexX = funInt((this.x + this.size + 2) / 16);
+                mapIndexY = funInt((this.y) / 16);
+                za1 = getMap(mapIndexY, mapIndexX);
+                za2 = getMap(funInt((this.y + this.size / 2) / 16), mapIndexX);
+                za3 = getMap(funInt((this.y + this.size) / 16), mapIndexX);
+            }
+            if (za1 || za2 || za3) {
+                this.hit = true;
+            }
         }
     }
 };
@@ -100,13 +114,15 @@ var PlayTank = function (context) {
     this.isProtected = true;//是否受保护
     this.protectedTime = 500;//保护时间
     this.offsetX = 0;//坦克2与坦克1的距离
-    this.speed = 4;//坦克的速度
-    this.x = 100;
-    this.y = 200;
+    this.speed = 2;//坦克的速度
+    this.x = 250;
+    this.y = 150;
 
     this.draw = function () {
         this.hit = false;
         this.ctx.drawImage(game.imgAll, this.skin[this.dir][0], this.skin[this.dir][1], this.size, this.size, this.x, this.y, this.size, this.size);
+        // this.ctx.fillStyle = "rgb(200,0,0)";
+        // this.ctx.fillRect(this.x, this.y, this.size, this.size);
     };
 };
 PlayTank.prototype = new Tank();

@@ -42,22 +42,22 @@
             keyEvent();
             // 画格子
             /*game.ctx.strokeStyle = '#888888';
-            game.ctx.lineWidth = 1;
-            game.ctx.fillStyle = '#fff';
-            game.ctx.font = "10px serif";
-            game.ctx.textAlign = "center";
-            var z = 0, r = 0;
-            for (var i = 0; i < game.width; i += 16) {
-                game.ctx.beginPath();
-                game.ctx.moveTo(i + 16, game.height);
-                game.ctx.lineTo(i + 16, 0);
-                game.ctx.fillText((z++).toString(), i + 8, 12, 16);
+             game.ctx.lineWidth = 1;
+             game.ctx.fillStyle = '#fff';
+             game.ctx.font = "10px serif";
+             game.ctx.textAlign = "center";
+             var z = 0, r = 0;
+             for (var i = 0; i < game.width; i += 16) {
+             game.ctx.beginPath();
+             game.ctx.moveTo(i + 16, game.height);
+             game.ctx.lineTo(i + 16, 0);
+             game.ctx.fillText((z++).toString(), i + 8, 12, 16);
 
-                game.ctx.moveTo(game.width, i + 16);
-                game.ctx.lineTo(0, i + 16);
-                game.ctx.fillText((r++).toString(), 8, i + 12, 16);
-                game.ctx.stroke();
-            }*/
+             game.ctx.moveTo(game.width, i + 16);
+             game.ctx.lineTo(0, i + 16);
+             game.ctx.fillText((r++).toString(), 8, i + 12, 16);
+             game.ctx.stroke();
+             }*/
         }
     };
 })();
@@ -108,6 +108,9 @@ $(document).keydown(function (e) {
             game.keys.push(keyCode);
             game.tank1.dir = RIGHT;
         }
+    }
+    if (e.keyCode == 32) {
+        game.tank1.shoot();
     }
 });
 $(document).keyup(function (e) {
