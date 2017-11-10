@@ -1,21 +1,21 @@
 /**************坦克及子弹的四个方向*****************/
-var UP = 0,
-    DOWN = 1,
-    LEFT = 2,
-    RIGHT = 3;
+var UP = 0;
+var DOWN = 1;
+var LEFT = 2;
+var RIGHT = 3;
 
 var Tank = function () {
     this.x = 0;
     this.y = 0;
-    this.size = 30;//坦克的大小
-    this.dir = UP;//方向0：上 1：下 2：左3：右
-    this.speed = 2;//坦克的速度
-    this.frame = 0;//控制敌方坦克切换方向的时间
-    this.hit = false; //是否碰到墙或者坦克
-    this.isAI = false; //是否自动
-    this.isShooting = false;//子弹是否在运行中
-    this.bullet = null;//子弹
-    this.shootRate = 0.6;//射击的概率
+    this.size = 30; // 坦克的大小
+    this.dir = UP; // 方向0：上 1：下 2：左3：右
+    this.speed = 2; // 坦克的速度
+    this.frame = 0; // 控制敌方坦克切换方向的时间
+    this.hit = false;  // 是否碰到墙或者坦克
+    this.isAI = false;  // 是否自动
+    this.isShooting = false; // 子弹是否在运行中
+    this.bullet = null; // 子弹
+    this.shootRate = 0.6; // 射击的概率
     this.isDestroyed = false;
     this.tempX = 0;
     this.tempY = 0;
@@ -25,20 +25,15 @@ var Tank = function () {
         [64, 0],
         [96, 0]
     ];
+
     // 射击
     this.shoot = function () {
-        if (this.dir === UP) {
-            this.ctx.fillStyle = "#fff";
-            this.ctx.beginPath();
-            this.ctx.arc(this.x + this.size / 2 + 1, this.y - 2, 2, 0, 2 * Math.PI);
-            this.ctx.fill();
-        } else if (this.dir === DOWN) {
-
-        } else if (this.dir === RIGHT) {
-
-        } else if (this.dir === LEFT) {
-
-        }
+        this.bullet = new Bullet(this, this.ctx, this.dir, 1);
+        this.bullet.x = this.x + this.size / 2 + 1;
+        this.bullet.y = this.y - 2;
+        this.bullet.draw();
+        // game.bulletArray.push(this.bullet);
+        this.isShooting = true;
     };
     this.move = function () {
         this.isHit();
@@ -74,7 +69,7 @@ var Tank = function () {
 
         if (!this.hit) {
             // 坦克附近的障碍坐标
-            let mapIndexX = 0, mapIndexY = 0, za1 = 0, za2 = 0, za3 = 0;
+            var mapIndexX = 0, mapIndexY = 0, za1 = 0, za2 = 0, za3 = 0;
 
             if (this.dir === UP) {
                 mapIndexX = funInt(this.x / 16);
@@ -116,7 +111,7 @@ var PlayTank = function (context) {
     this.offsetX = 0;//坦克2与坦克1的距离
     this.speed = 2;//坦克的速度
     this.x = 250;
-    this.y = 150;
+    this.y = game.height - this.size;
 
     this.draw = function () {
         this.hit = false;

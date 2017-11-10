@@ -9,12 +9,11 @@
         stage: null, // 舞台
         ctx: '', //2d
         frameRate: 20,// 帧率
-
         map: null,// 地图
         tank1: null,
         imgAll: new Image(),
-
         keys: [],// 记录按键
+        bulletArray: [], // 子弹
         init: function () {
             this.stage = document.getElementById('stage');
             this.ctx = this.stage.getContext("2d");
@@ -40,6 +39,7 @@
             game.tank1.draw();
             game.map.draw();
             keyEvent();
+            drawAll();
             // 画格子
             /*game.ctx.strokeStyle = '#888888';
              game.ctx.lineWidth = 1;
@@ -85,11 +85,30 @@ function keyEvent () {
 
 function sendInfo () {
     if (GetQueryString('send')) {
-        var t = game.tank1;
-        var json = {k: game.keys, x: game.tank1.x, y: game.tank1.y};
+        let json = {k: game.keys, x: game.tank1.x, y: game.tank1.y};
         socket.emit('data', JSON.stringify(json));
     }
-    // console.log(game.tank1.x, game.tank1.y)
+}
+
+function drawBullet () {
+    if (this.bulletArray != null && this.bulletArray.length > 0) {
+        for (var i = 0; i < this.bulletArray.length; i++) {
+            var bulletObj = this.bulletArray[i];
+            if (bulletObj.isDestroyed) {
+                console.log('t');
+                bulletObj.owner.isShooting = false;
+                this.bulletArray.splice(i, 1);
+                i--;
+            } else {
+                console.log('f');
+                bulletObj.draw();
+            }
+        }
+    }
+}
+
+function drawAll () {
+    drawBullet();
 }
 
 $(document).keydown(function (e) {
