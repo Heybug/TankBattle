@@ -1,13 +1,16 @@
-/**************坦克及子弹的四个方向*****************/
+// 坦克及子弹的四个方向
 var UP = 0;
 var DOWN = 1;
 var LEFT = 2;
 var RIGHT = 3;
 
+/**
+ * 坦克制造商
+ * */
 var Tank = function () {
     this.x = 0;
     this.y = 0;
-    this.size = 30; // 坦克的大小
+    this.size = 32; // 坦克的大小
     this.dir = UP; // 方向0：上 1：下 2：左3：右
     this.speed = 2; // 坦克的速度
     this.frame = 0; // 控制敌方坦克切换方向的时间
@@ -17,24 +20,43 @@ var Tank = function () {
     this.bullet = null; // 子弹
     this.shootRate = 0.6; // 射击的概率
     this.isDestroyed = false;
-    this.tempX = 0;
-    this.tempY = 0;
     this.skin = [
         [0, 0],
         [32, 0],
         [64, 0],
         [96, 0]
     ];
-
-    // 射击
+    /**
+     * 射击
+     * */
     this.shoot = function () {
+        if (game.bulletArray.length > 0) return;
+
+        var tempX, tempY;
         this.bullet = new Bullet(this, this.ctx, this.dir, 1);
-        this.bullet.x = this.x + this.size / 2 + 1;
-        this.bullet.y = this.y - 2;
+        if (this.dir == UP) {
+            tempX = this.x + parseInt(this.size / 2) - parseInt(this.bullet.size / 2);
+            tempY = this.y - this.bullet.size;
+        } else if (this.dir == DOWN) {
+            tempX = this.x + parseInt(this.size / 2) - parseInt(this.bullet.size / 2);
+            tempY = this.y + this.size;
+        } else if (this.dir == LEFT) {
+            tempX = this.x - this.bullet.size;
+            tempY = this.y + parseInt(this.size / 2) - parseInt(this.bullet.size / 2);
+        } else if (this.dir == RIGHT) {
+            tempX = this.x + this.size;
+            tempY = this.y + parseInt(this.size / 2) - parseInt(this.bullet.size / 2);
+        }
+
+        this.bullet.x = tempX;
+        this.bullet.y = tempY;
         this.bullet.draw();
-        // game.bulletArray.push(this.bullet);
         this.isShooting = true;
+        game.bulletArray.push(this.bullet);
     };
+    /**
+     * 老司机要开坦克了
+     * */
     this.move = function () {
         this.isHit();
 
@@ -55,7 +77,9 @@ var Tank = function () {
             this.y = this.tempY;
         }
     };
-    // 碰撞
+    /**
+     * 检查老司机有没碰瓷
+     * */
     this.isHit = function () {
         if (this.dir == UP && this.y + this.speed <= this.speed) {
             this.hit = true;
@@ -102,7 +126,10 @@ var Tank = function () {
         }
     }
 };
-// 玩家
+
+/**
+ * 玩家坦克
+ * */
 var PlayTank = function (context) {
     this.ctx = context;
     this.lives = 3;//生命值

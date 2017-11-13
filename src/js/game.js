@@ -1,3 +1,6 @@
+/**
+ * 坦克大战
+ * */
 (function () {
     window.onload = function () {
         game.init();
@@ -20,7 +23,7 @@
             this.stage.width = this.width;
             this.stage.height = this.height;
             this.stage.style.cssText = "background-color:#000";
-            this.imgAll.src = 'http://192.168.50.18:3000/images/tankAll.gif';
+            this.imgAll.src = 'http://127.0.0.1:3000/images/tankAll.gif';
             this.map = new Map(this.ctx);
             this.tank1 = new PlayTank(this.ctx);
 
@@ -38,26 +41,31 @@
             game.ctx.clearRect(0, 0, game.width, game.height);
             game.tank1.draw();
             game.map.draw();
+            // game.geZi();
             keyEvent();
             drawAll();
-            // 画格子
-            /*game.ctx.strokeStyle = '#888888';
-             game.ctx.lineWidth = 1;
-             game.ctx.fillStyle = '#fff';
-             game.ctx.font = "10px serif";
-             game.ctx.textAlign = "center";
-             var z = 0, r = 0;
-             for (var i = 0; i < game.width; i += 16) {
-             game.ctx.beginPath();
-             game.ctx.moveTo(i + 16, game.height);
-             game.ctx.lineTo(i + 16, 0);
-             game.ctx.fillText((z++).toString(), i + 8, 12, 16);
+        },
+        /**
+         * 画格子
+         * */
+        geZi: function () {
+            this.ctx.strokeStyle = '#888888';
+            this.ctx.lineWidth = 1;
+            this.ctx.fillStyle = '#fff';
+            this.ctx.font = "10px serif";
+            this.ctx.textAlign = "center";
+            var z = 0, r = 0;
+            for (var i = 0; i < this.width; i += 16) {
+                this.ctx.beginPath();
+                this.ctx.moveTo(i + 16, this.height);
+                this.ctx.lineTo(i + 16, 0);
+                this.ctx.fillText((z++).toString(), i + 8, 12, 16);
 
-             game.ctx.moveTo(game.width, i + 16);
-             game.ctx.lineTo(0, i + 16);
-             game.ctx.fillText((r++).toString(), 8, i + 12, 16);
-             game.ctx.stroke();
-             }*/
+                this.ctx.moveTo(this.width, i + 16);
+                this.ctx.lineTo(0, i + 16);
+                this.ctx.fillText((r++).toString(), 8, i + 12, 16);
+                this.ctx.stroke();
+            }
         }
     };
 })();
@@ -85,22 +93,20 @@ function keyEvent () {
 
 function sendInfo () {
     if (GetQueryString('send')) {
-        let json = {k: game.keys, x: game.tank1.x, y: game.tank1.y};
+        var json = {k: game.keys, x: game.tank1.x, y: game.tank1.y};
         socket.emit('data', JSON.stringify(json));
     }
 }
 
 function drawBullet () {
-    if (this.bulletArray != null && this.bulletArray.length > 0) {
-        for (var i = 0; i < this.bulletArray.length; i++) {
-            var bulletObj = this.bulletArray[i];
+    if (game.bulletArray != null && game.bulletArray.length > 0) {
+        for (var i = 0; i < game.bulletArray.length; i++) {
+            var bulletObj = game.bulletArray[i];
             if (bulletObj.isDestroyed) {
-                console.log('t');
                 bulletObj.owner.isShooting = false;
-                this.bulletArray.splice(i, 1);
+                game.bulletArray.splice(i, 1);
                 i--;
             } else {
-                console.log('f');
                 bulletObj.draw();
             }
         }
